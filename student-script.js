@@ -20,7 +20,7 @@
  * the new city and regenerate the items at that location.
  *
  * Hint:
- * Use this.refreshViews() to reload the UI.
+ * var this = the current game;
  */
 isis.Game.prototype.changeCity = function(newCity) {
   console.log('trying to change city to ' + newCity.name);
