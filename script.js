@@ -281,7 +281,7 @@ var isis = function() {
         i.quantity -= quantity;
       }
     } else {
-      throw 'Item not found in Inventory: ' + i.name;
+      throw 'Item not found in Inventory: ' + i.item.name;
     }
   }
 
