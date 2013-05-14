@@ -128,8 +128,4 @@ isis.Agent.prototype.init = function(item) {
 
 // This runs the game, this HAS to be at the
 // bottom of the file!
-$(function() {
-  setTimeout(function() {
-    isis.init();
-  }, 250);
-});
+isis.init();

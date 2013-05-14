@@ -21,17 +21,17 @@ An `Item` in the game which can be bought and sold.
 The `name` of the `Item`
 
 ##### `Item.minPrice` and `Item.maxPrice`
-These numbers determine the range at which the `Item.currentPrice` will evaluate to.
+These numbers determine the range, min and max, at which the `Item.currentPrice` will evaluate to.
 
 ##### `Item.currentPrice`
 The current price of the `Item`. If the `Agent` were to sell or buy the `Item` it would be at this cost.
 
 #### Methods
 ##### `Item.recalculatePrice()`
-Recalculates the `Item`s price when called.
+Recalculates the `Item`s price. This will generate a number between the `Item`s `minPrice` and `maxPrice`
 
 ### `Agent`
-Represents the player of the game, this is the user profile.
+Represents the player of the game, this is the user's profile.
 
 #### Properties
 ##### `Agent.name`
@@ -41,8 +41,7 @@ The `name` of the `Agent`
 This is how much cash on hand you have. When this gets to 0 you lose.
 
 ##### `Agent.inventory`
-The `Agent`s inventory (`AgentInventory`) which contains all the `Item`s
-the `Agent` is currently carrying.
+The `Agent`s inventory (`AgentInventory`) which contains all the `Item`s the `Agent` is currently carrying.
 
 #### Methods
 ##### `Agent.getRank()`
@@ -58,8 +57,7 @@ inventory.
 
 #### Methods
 ##### `AgentInventory.pop(item, quantity)`
-Returns the `AgentInventoryItem` give by item. If the quantity becomes zero, 
-it is removed from the `Agent`s inventory
+Returns the `AgentInventoryItem` give by item. If the quantity becomes zero, it is removed from the `Agent`s inventory
 
 ##### `AgentInventory.push(item, quantity)`
 Adds the `Item` with given `quantity` to the `Agent`s inventory. If the `Agent`
