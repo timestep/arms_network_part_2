@@ -47,33 +47,20 @@ The `Agent`s inventory (`AgentInventory`) which contains all the `Item`s the `Ag
 ##### `Agent.getRank()`
 This method will return a `String` based on the Agent's current rank.
 
-### `AgentInventory`
-This is the `Agent`s inventory. It contains `AgentInventoryItem`s
+##### `Agent.buyItem(item, quantity)`
+Buys an item and adds it to the `Agent`s inventory.
 
-#### Properties
-##### `AgentInventory.inventory`
-An `Array` which contains all the `AgentInventoryItem`s in an `Agent`s
-inventory.
+##### `Agent.sellItem(item, quantity)`
+Sells an item that is currently in the `Agent`s inventory
 
-#### Methods
-##### `AgentInventory.pop(item, quantity)`
-Returns the `AgentInventoryItem` give by item. If the quantity becomes zero, it is removed from the `Agent`s inventory
-
-##### `AgentInventory.push(item, quantity)`
-Adds the `Item` with given `quantity` to the `Agent`s inventory. If the `Agent`
-already has the item in their inventory, the `quantity` will be added to the inventory.
-
-##### `AgentInventory.findItem(item)`
-Returns the `AgentInventoryItem` for a given `Item`.
-
-
-### `AgentInventoryItem`
+### `AgentItem`
 This is an `Item` that exists in the `Agent`s inventory.
+
 #### Properties
-##### `AgentInventoryItem.item`
+##### `AgentItem.item`
 The `Item` in the `Agent`'s inventory.
 
-##### `AgentInventoryItem.quantity`
+##### `AgentItem.quantity`
 The amount of `Item`s in the inventory.
 
 ### `Game`
@@ -85,7 +72,7 @@ The `Agent` for this `Game`
 
 ##### `Game.cities`
 A list of all the `Cities` available to travel to.
- 
+
 ##### `Game.currentCity`
 The `City` where the `Agent` is currently residing
 
@@ -96,7 +83,7 @@ This method is fired when the user clicks on the buy button.
 `item`: The `Item` the user is trying to buy.
 
 ##### `Game.sellingItem(inventoryItem)`
-This method is fired when the user clicks on the sell button. 
+This method is fired when the user clicks on the sell button.
 
 `inventoryItem`: The `AgentInventoryItem` the user is trying to sell.
 
