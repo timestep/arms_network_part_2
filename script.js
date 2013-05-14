@@ -116,10 +116,10 @@ var isis = function() {
   function printInventory(inventory, currentCityItems) {
     $_inventory.text('');
 
-    for (k in inventory.store) {
+    for (k in inventory) {
       var v, itemValue, worth, $row, $sell, $item, $buttonGroup;
 
-      v = inventory.store[k];
+      v = inventory[k];
       itemValue = v.quantity * v.item.currentPrice;
       worth = '';
       $row = $('<tr>');
@@ -262,7 +262,7 @@ var isis = function() {
   }
 
   Agent.prototype.getInventoryItem = function(index) {
-    return this.inventory.store[index];
+    return this.inventory[index];
   }
 
   Agent.prototype.findItem = function(item) {
