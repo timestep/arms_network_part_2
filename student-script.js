@@ -15,21 +15,33 @@
 /*
  * This function will be called when the user changes cities, you will have to
  * look at the docs for the Game.currentCity property and look at the methods
- * which are on the City object
+ * which are on the City object.
  *
  * User Story:
- * Whenever you move citites, the game will have to move the player to
- * the new city and regenerate the items at that location.
+ * Whenever the user decides to move the agent to a new city, the game will have
+ * to move the player to the new city and regenerate the items available in that
+ * city.
  *
  * Hint:
- * var this = the current game;
+ * - This is currently being run in the currently running game's context
+ *    i.e. this = the current game;
  */
 isis.Game.prototype.changeCity = function(newCity) {
-  console.log('trying to change city to ' + newCity.name);
+  console.log(this.agent.name + ' is trying to change city to ' + newCity.name);
 }
 
 /*
- * This function will be called when the user buys an item
+ * This function will be called when the user buys an item.
+ *
+ * Notes:
+ * You will have to
+ * check the Agent class and it's inventory property, also take a look at the
+ * related methods, buyItem(item, quantity) and sellItem(item, quantity) on the
+ * Agent class.
+ *
+ * You will need to somehow get the amount of items the player would like the
+ * agent to buy. Also, be nice to the player and check to make sure they can
+ * actually buy
  *
  * User Story:
  * A player can buy items in a city. Each item has a cost and can be
@@ -43,7 +55,8 @@ isis.Game.prototype.buyItem = function(item) {
 }
 
 /**
- * This function will be called when the user sells an item
+ * This function will be called when the user sells an item, see the notes on
+ * the isis.Game.prototype.buyItem method above.
  *
  * User Story:
  * A player can sell items in a city. Each item has a cost and can be
@@ -69,7 +82,7 @@ isis.Game.prototype.sellItem = function(inventoryItem) {
  * Make up a few more bad things that could happen to our agent!
  * A few examples:
  *   Customs Fare Hike (5% tax on all current money)
- *   Search & Seizure (-$5000)
+ *   Search & Seizure (-$500)
  *
  * N.B.
  * The bad thing needs to follow the same format as the temporary bad thing
