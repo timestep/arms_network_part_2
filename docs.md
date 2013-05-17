@@ -41,7 +41,7 @@ The `name` of the `Agent`
 This is how much cash on hand you have. When this gets to 0 you lose.
 
 ##### `Agent.inventory`
-The `Agent`s inventory (`AgentInventory`) which contains all the `Item`s the `Agent` is currently carrying.
+The `Agent`s inventory (an `Array` of `AgentItems`)  which contains all the `Item`s the `Agent` is currently carrying.
 
 #### Methods
 ##### `Agent.getRank()`
