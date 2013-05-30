@@ -4,6 +4,15 @@ var isis = function() {
   var $_cities, $_cityTitle, $_items, $_inventory, $_codename, $_agentName, $_agentRank;
   var Agent, City, Game;
 
+  function promptForNumber(message)
+  {
+    var num;
+    do {
+      num = prompt(message);
+    } while (isNaN(num) || num == "");
+    return num;
+  }
+
   function getRandomIntInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
@@ -32,6 +41,9 @@ var isis = function() {
       var item = $(this).data('item');
       item = _game.currentCity.items[item];
 
+      console.log("The item going in is: ");
+      console.log(item);
+
       _game.buyItem(item);
       _game.refreshViews();
     });
@@ -48,7 +60,7 @@ var isis = function() {
       var item;
 
       // keep randomly selecting an item until the item
-      // was not the last one added to the sample
+      // is not the last one added to the sample
       do {
         var num = Math.floor(Math.random() * items.length);
         item = items[num];
@@ -66,15 +78,15 @@ var isis = function() {
     $_cities.text('');
     $_cityTitle.text(currentCity.name);
 
-    for (k in _cities) {
-      var $row, $span, $city, $button, v;
-      v = _cities[k];
+    for (i in _cities) {
+      var $row, $span, $city, $button, city;
+      city = _cities[i];
       $row = $('<tr>');
       $city = $('<td>').addClass('city span3');
-      $button = createButtonForCity(k);
+      $button = createButtonForCity(i);
       $button.addClass('span3');
 
-      if (v !== currentCity) {
+      if (city !== currentCity) {
         $button.addClass('btn-primary');
         $button.click(function() {
           var city = $(this).data('city')
@@ -90,7 +102,7 @@ var isis = function() {
         $button.addClass('btn-warning disabled');
       }
 
-      $city.text(v.name);
+      $city.text(city.name);
 
       $row.append($city);
       $row.append($('<td>').append($button));
@@ -246,8 +258,15 @@ var isis = function() {
     printProfile(this.agent);
   }
 
+  // 
+  Game.prototype.changeCity = function(newCity) {
+    console.log(this.agent.name + ' is trying to change city to ' + newCity.name);
+    this.currentCity = newCity;
+    this.refreshViews();
+  }
+
   // Return true/false based on if a random number equals 1
-  Game.prototype.badThing? = function() {
+  Game.prototype.badThing = function() {
     var roll = getRandomIntInRange(1, 10);
     console.log('rolled ' + roll);
     if (roll === 1) {
@@ -269,11 +288,105 @@ var isis = function() {
   // Roll a die to see if a bad thing should happen and if so make it happen
   // if not, life's good
   Game.prototype.rollDieForBadThing = function () {
-    if (_game.badThing?()) {
+    if (_game.badThing()) {
       _game.makeBadThingHappen();
     } else {
       alert("Nothing bad happened!\nPhew!");
     }
+  }
+
+  Game.prototype.buyItem = function(item) {
+    console.log("The item that came in is: ");
+    console.log(item);
+    var invalid = true;
+    while (invalid) {
+      var qty = promptForNumber("How many of " + item.name + " do you want?")
+      if (qty < 1) {
+        alert("Please enter in a number greater than 0.");
+      } else {
+        invalid = false;
+      }
+    }
+    var amount = item.currentPrice * qty;
+
+    if (!this.agent.canAfford(amount)) {
+      alert("You can't afford $" + amount + ".")
+      return; 
+    }
+
+    var yes = confirm("Please confirm you want " + qty + " of " + 
+      item.name + " for $" + amount);
+
+    if (yes) {
+      this.agent.spendMoney(amount);
+      this.agent.buyItem(item, qty);
+    }
+
+    this.refreshViews();
+  }
+
+  Game.prototype.sellItem = function(inventoryItem) {
+    var value = inventoryItem.item.currentPrice * inventoryItem.quantity;
+    console.log('Trying to sell ' + inventoryItem.item.name + ', I have ' + inventoryItem.quantity + ' worth $' + value);
+
+    var invalid = true;
+    while (invalid) {
+      var qty = promptForNumber("How many of " + inventoryItem.item.name + " do you want to sell?")
+      if (qty < 1) {
+        alert("Please enter a number 1 or greater");
+      }
+      else if (qty > inventoryItem.quantity) {
+        alert("You only have " + inventoryItem.quantity);
+      }
+      else {
+        invalid = false;
+      }
+    }
+
+    var amount = qty * inventoryItem.item.currentPrice;
+    this.agent.sellItem(inventoryItem.item, qty);
+    this.agent.earnMoney(amount);
+
+    this.refreshViews();
+  }
+
+  Game.prototype.initBadThings = function(badThings) {
+    badThings.push({
+      name: "Custom fare hike",
+      ohNoes: function(agent) {
+        alert("You got busted carrying cash through customs. You had to pay a 5% tax.");
+        agent.money = agent.money * .95;
+        alert("You lost a decent chunk");
+      }
+    });
+    
+    badThings.push({
+      name: "Search & seizure",
+      ohNoes: function(agent) {
+        // Your bad thing code goes here
+        alert("The police said you fit a profile. You got searched, and they seized!");
+        agent.money -= 100;
+        alert("You lost 100 bucks");
+      }
+    });
+
+    badThings.push({
+      name: "Feeling the pressure",
+      ohNoes: function(agent) {
+        alert("You couldn't take the pressure of carrying around all that cash. You ordered bottle service at the club and got wasted.");
+        agent.money -= 100;
+        alert("You lost 100 bucks");
+      }
+    });
+
+    badThings.push({
+      name: "You got jumped",
+      ohNoes: function(agent) {
+        alert("You got jumped by a rival cartel member. They shook you down.");
+        agent.money -= 50;
+        alert("You lost 50 bucks");
+      }
+    })
   }
 
   // Initialize a new AgentItem with a given item and quantity
@@ -312,45 +425,78 @@ var isis = function() {
 
   // 
   Agent.prototype.buyItem = function(item, quantity) {
-    var item = this.findItem(item);
-    if (i) {
-      i.quantity += quantity;
+    console.log("The item that came in even deeper is: ");
+    console.log(item);
+    var found_item = this.findItem(item);
+    console.log("Now it is: ");
+    console.log(item);
+    if (found_item) {
+      found_item.quantity += quantity;
     } else {
-      i = new AgentItem(item, quantity);
-      this.inventory.push(i);
+      item = new AgentItem(item, quantity);
+      this.inventory.push(item);
     }
   }
 
   // 
   Agent.prototype.sellItem = function(item, quantity) {
-    var i = this.findItem(item);
-    if (i) {
-      if (i.quantity - quantity < 0) {
+    var found_item = this.findItem(item);
+    if (found_item) {
+      if (found_item.quantity - quantity < 0) {
         // error
         throw 'Cannot remove that much: ' + quantity;
-      } else if (i.quantity - quantity === 0) {
+      } else if (found_item.quantity - quantity === 0) {
         // remove from array
         var index = this.inventory.indexOf(i);
         this.inventory.splice(index, 1);
       } else {
-        i.quantity -= quantity;
+        found_item.quantity -= quantity;
       }
     } else {
       throw 'Item not found in Inventory: ' + i.item.name;
     }
   }
 
+  Agent.prototype.getRank = function(item) { 
+    if (this.money < 500)
+      return "Rookie";
+    if (this.money < 1000)
+      return "Agent";
+    if (this.money < 5000)
+      return "Top Agent";
+    if (this.money >= 5000)
+      return "Double-0";
+  }
+
+  Agent.prototype.init = function(item) { 
+    this.name = prompt("What is your name, agent?"); // This should be set by the user
+    this.codename = prompt("And your codename?"); // This too
+  }
+
+  Agent.prototype.canAfford = function(amount) {
+    return this.money >= amount;
+  };
+
+  Agent.prototype.spendMoney = function(amount) {
+    if (this.canAfford(amount))
+      this.money -= amount;
+  };
+
+  Agent.prototype.earnMoney = function(amount) {
+    this.money += amount;
+  };
+
   return {
     init: function() {
-      $_cities = $('#cities');
-      $_items = $('#items');
+      $_cities    = $('#cities');
+      $_items     = $('#items');
       $_cityTitle = $('#currentCity');
       $_inventory = $('#inventory');
-      $_codename = $('#codename');
+      $_codename  = $('#codename');
       $_agentName = $('#agentName');
       $_agentRank = $('#agentRank');
-      $_money = $('#agentMoney');
-      _game = new Game();
+      $_money     = $('#agentMoney');
+      _game       = new Game();
     },
 
     game: _game,
@@ -365,3 +511,5 @@ var isis = function() {
     Game: Game
   }
 }();
+
+isis.init();
