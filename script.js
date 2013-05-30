@@ -240,7 +240,6 @@ var isis = function() {
     this.agent = new Agent();
 
     this.refreshViews();
-    // this.initBadThings is defined in student-script.js
     this.initBadThings(this.badThings);
   }
 
