@@ -1,9 +1,11 @@
+// ISIS is a name from the Dope Wars game
 var isis = function() {
-  // define a bunch of variables w/o any values
+  // Define a bunch of variables without any values
   var _game, _items, _cities;
   var $_cities, $_cityTitle, $_items, $_inventory, $_codename, $_agentName, $_agentRank;
   var Agent, City, Game;
 
+  // Prompt user for a valid num and return it
   function promptForNumber(message)
   {
     var num;
@@ -13,11 +15,12 @@ var isis = function() {
     return num;
   }
 
+  // Return a random integer between the given min and max
   function getRandomIntInRange(min, max) {
     return Math.floor(Math.random() * (max - min + 1) + min);
   }
 
-  // returns a HTML button for a city
+  // Return a HTML button for a city
   function createButtonForCity(city) {
     var $button = $("<button>");
     $button.attr('data-city', city);
@@ -27,8 +30,8 @@ var isis = function() {
     return $button;
   }
 
-  // returns a HTML button for an item
-  // while binding a click event to the button
+  // Return a HTML button for an item
+  // and bind a click event to the button
   function createButtonForItem(item) {
     var $buy;
     $buy = $("<button>");
@@ -36,7 +39,7 @@ var isis = function() {
     $buy.text('Buy');
     $buy.addClass('btn');
 
-    // on click the item is bought and the views are refreshed
+    // On click the item is bought and the views are refreshed
     $buy.click(function() {
       var item = $(this).data('item');
       item = _game.currentCity.items[item];
@@ -51,7 +54,7 @@ var isis = function() {
     return $buy;
   }
 
-  // Returns a subset of an array of items
+  // Return a random subset of the given items
   // with the size of the subset given
   function sample(items, numberOfItems) {
     var sampleOfItems = [];
@@ -59,7 +62,7 @@ var isis = function() {
     do {
       var item;
 
-      // keep randomly selecting an item until the item
+      // Keep randomly selecting an item until the item
       // is not the last one added to the sample
       do {
         var num = Math.floor(Math.random() * items.length);
@@ -73,7 +76,7 @@ var isis = function() {
     return sampleOfItems;
   }
 
-
+  // Set the DOM elements for the cities
   function printCities(currentCity) {
     $_cities.text('');
     $_cityTitle.text(currentCity.name);
@@ -92,7 +95,6 @@ var isis = function() {
           var city = $(this).data('city')
           city = _cities[city];
 
-          // Delegate to Student code
           _game.changeCity(city);
           _game.rollDieForBadThing();
           _game.refreshViews();
@@ -110,6 +112,7 @@ var isis = function() {
     }
   }
 
+  // Set the DOM elements for currentCity's items
   function printItems(currentCity) {
     $_items.text('');
 
@@ -135,7 +138,7 @@ var isis = function() {
     }
   }
 
-  // 
+  // Set the DOM elements for the agent's inventory
   function printInventory(inventory, currentCityItems) {
     $_inventory.text('');
 
@@ -177,6 +180,7 @@ var isis = function() {
     }
   }
 
+  // Set the text of the DOM elements for the agent's profile
   function printProfile(agent) {
     $_codename.text(agent.codename);
     $_agentName.text(agent.name);
@@ -185,21 +189,22 @@ var isis = function() {
   }
 
   // Initialize a new Item with a given name, minPrice, and maxPrice
-  // and set currentPrice through recalculatePrice()
+  // and set currentPrice with recalculatePrice()
   Item = function(name, minPrice, maxPrice) {
-    this.name = name;
+    this.name     = name;
     this.minPrice = minPrice;
     this.maxPrice = maxPrice;
     this.recalculatePrice();
   }
 
-  // set currentPrice of Item with said Item's minPrice and maxPrice
+  // Randomly set currentPrice of Item between said Item's minPrice and maxPrice
   Item.prototype.recalculatePrice = function () {
     this.currentPrice = getRandomIntInRange(this.minPrice, this.maxPrice);
   }
 
   // Initialize an array of Items
   _items = [
+    // new Item(name, minPrice, maxPrice)
     new Item('M4A1', 250, 500),
     new Item('TEC-9', 100, 250),
     new Item('.44 Magnum', 350, 500),
@@ -211,10 +216,9 @@ var isis = function() {
 
   // Initialize a new City with a given name and give it a random number of random Items
   City = function(name) {
-    this._numOfItems = getRandomIntInRange(3, _items.length);
     this.name = name;
 
-    // set internal array of items for this city
+    this._numOfItems = getRandomIntInRange(3, _items.length);
     this.items = sample(_items, this._numOfItems);
   }
 
@@ -229,42 +233,42 @@ var isis = function() {
     new City('Sydney')
   ];
 
-  // When a new Game is initialized, give it the array of Cities,
-  // randomly select a currentCity, give it a new Agent,
-  // refresh the views, and then give it badThings
+  // Initialize Game with an array of Cities,
+  // a random currentCity, a new Agent, 
+  // badThings, and then refresh the views
   Game = function() {
     this.cities = _cities;
     this.currentCity = _cities[getRandomIntInRange(0, _cities.length - 1)];
     this.badThings = [];
 
     this.agent = new Agent();
+    this.initBadThings(this.badThings);
 
     this.refreshViews();
-    this.initBadThings(this.badThings);
   }
 
-  // Upon refreshing the views, 
+  // Update what is displayed visually on the screen
   Game.prototype.refreshViews = function() {
     printCities(this.currentCity);
 
-    // print the Items for this game's currentCity
+    // Print the items for the currentCity
     printItems(this.currentCity);
 
-    // print the invetory for this game's agent and this game's currentCity
+    // Print the inventory the agent has for the currentCity
     printInventory(this.agent.inventory, this.currentCity.items);
 
-    // print the profile for this game's agent
+    // Print the agent's profile
     printProfile(this.agent);
   }
 
-  // 
+  // Change the currentCity to the given city and then refresh the views
   Game.prototype.changeCity = function(newCity) {
     console.log(this.agent.name + ' is trying to change city to ' + newCity.name);
     this.currentCity = newCity;
     this.refreshViews();
   }
 
-  // Return true/false based on if a random number equals 1
+  // Return true/false based on if a random number between 1 and 10 equals 1
   Game.prototype.badThing = function() {
     var roll = getRandomIntInRange(1, 10);
     console.log('rolled ' + roll);
@@ -285,7 +289,6 @@ var isis = function() {
   }
 
   // Roll a die to see if a bad thing should happen and if so make it happen
-  // if not, life's good
   Game.prototype.rollDieForBadThing = function () {
     if (_game.badThing()) {
       _game.makeBadThingHappen();
@@ -294,22 +297,28 @@ var isis = function() {
     }
   }
 
+  // Function called when buy is clicked for an item
   Game.prototype.buyItem = function(item) {
-    console.log("The item that came in is: ");
-    console.log(item);
     var invalid = true;
+
+    // While invalid is true
     while (invalid) {
+      // Prompt user for a number for qty
       var qty = promptForNumber("How many of " + item.name + " do you want?")
       if (qty < 1) {
+        // If qty is less than 1, alert user to enter in a valid number
         alert("Please enter in a number greater than 0.");
       } else {
+        // Else change invalid to false and break while loop
         invalid = false;
       }
     }
+
     var amount = item.currentPrice * qty;
 
     if (!this.agent.canAfford(amount)) {
       alert("You can't afford $" + amount + ".")
+      // return; ends function and the rest of the code is not run
       return; 
     }
 
@@ -324,12 +333,18 @@ var isis = function() {
     this.refreshViews();
   }
 
+  // Function called when sell is clicked for an item
   Game.prototype.sellItem = function(inventoryItem) {
+
     var value = inventoryItem.item.currentPrice * inventoryItem.quantity;
+
     console.log('Trying to sell ' + inventoryItem.item.name + ', I have ' + inventoryItem.quantity + ' worth $' + value);
 
     var invalid = true;
+
+    // While invalid is true
     while (invalid) {
+      // Prompt user for a number for qty
       var qty = promptForNumber("How many of " + inventoryItem.item.name + " do you want to sell?")
       if (qty < 1) {
         alert("Please enter a number 1 or greater");
@@ -338,6 +353,7 @@ var isis = function() {
         alert("You only have " + inventoryItem.quantity);
       }
       else {
+        // Only change invalid to false and break loop if qty meets conditions
         invalid = false;
       }
     }
@@ -349,6 +365,8 @@ var isis = function() {
     this.refreshViews();
   }
 
+  // Add four bad things to the empty array being given called badThings
+  // Each bad thing has a name, and a function of what happens called ohNoes
   Game.prototype.initBadThings = function(badThings) {
     badThings.push({
       name: "Custom fare hike",
@@ -362,7 +380,6 @@ var isis = function() {
     badThings.push({
       name: "Search & seizure",
       ohNoes: function(agent) {
-        // Your bad thing code goes here
         alert("The police said you fit a profile. You got searched, and they seized!");
         agent.money -= 100;
         alert("You lost 100 bucks");
@@ -395,7 +412,7 @@ var isis = function() {
   }
 
   // Initialize a new Agent, give it money, an empty inventory,
-  // and call an init function defined in student-script.js
+  // and call init
   Agent = function() {
     this.money = 1000;
     this.inventory = [];
@@ -403,32 +420,32 @@ var isis = function() {
     this.init();
   }
 
-  Agent.prototype.init = function() {
-    // overridden by student code
+  // Prompt the user for a name and a codename for the agent
+  Agent.prototype.init = function(item) { 
+    this.name = prompt("What is your name, agent?");
+    this.codename = prompt("And your codename?");
   }
 
-  // Return the item from the inventory with its index
+  // Return the the given index of the inventory which will be an item
   Agent.prototype.getInventoryItem = function(index) {
     return this.inventory[index];
   }
 
-  // Find given item in inventory and return it
-  Agent.prototype.findItem = function(item) {
-    for (var k in this.inventory) {
-      var v = this.inventory[k];
-      if (v.item === item) {
+  // Find the given item in the inventory and return it
+  Agent.prototype.findItem = function(item_to_find) {
+    for (var i in this.inventory) {
+      var v = this.inventory[i];
+      if (v.item === item_to_find) {
         return v;
       }
     }
   }
 
-  // 
+  // Increment an item's quantity in the agent's inventory
+  // by a given num
+  // If the item is not found in the inventory, create it
   Agent.prototype.buyItem = function(item, quantity) {
-    console.log("The item that came in even deeper is: ");
-    console.log(item);
     var found_item = this.findItem(item);
-    console.log("Now it is: ");
-    console.log(item);
     if (found_item) {
       found_item.quantity += quantity;
     } else {
@@ -437,26 +454,37 @@ var isis = function() {
     }
   }
 
-  // 
+  // Reduce an item's quantity in the agent's inventory
+  // by a given number
   Agent.prototype.sellItem = function(item, quantity) {
+    // Find the item in the invetory
     var found_item = this.findItem(item);
+    // If the item was found...
     if (found_item) {
+      // ...and the quantity of the item exceeds the given quantity...
       if (found_item.quantity - quantity < 0) {
-        // error
+        // ...throw an error.
         throw 'Cannot remove that much: ' + quantity;
-      } else if (found_item.quantity - quantity === 0) {
-        // remove from array
+      } 
+      // Or if all of the items are sold...
+      else if (found_item.quantity - quantity === 0) {
+        // Remove it from the inventory.
         var index = this.inventory.indexOf(i);
         this.inventory.splice(index, 1);
-      } else {
+      } 
+      // Otherwise decrement the item's quantity by the given quantity.
+      else {
         found_item.quantity -= quantity;
       }
-    } else {
+    } 
+    // Else if the item was not found, throw an error.
+    else {
       throw 'Item not found in Inventory: ' + i.item.name;
     }
   }
 
-  Agent.prototype.getRank = function(item) { 
+  // Return ranks based on how much money the agent has
+  Agent.prototype.getRank = function() { 
     if (this.money < 500)
       return "Rookie";
     if (this.money < 1000)
@@ -467,24 +495,31 @@ var isis = function() {
       return "Double-0";
   }
 
-  Agent.prototype.init = function(item) { 
-    this.name = prompt("What is your name, agent?"); // This should be set by the user
-    this.codename = prompt("And your codename?"); // This too
-  }
-
+  // Return true/false based on if the agent has money 
+  // greater than or equal to the given amount
   Agent.prototype.canAfford = function(amount) {
     return this.money >= amount;
   };
 
+  // Decrement the agent's money by the given amount
   Agent.prototype.spendMoney = function(amount) {
     if (this.canAfford(amount))
       this.money -= amount;
   };
 
+  // Increment the agent's money by the given amount
   Agent.prototype.earnMoney = function(amount) {
     this.money += amount;
   };
 
+  // Return init, debug, Agent, AgentItem, Item, City, and Game
+  // in the namescope of isis
+  //
+  // This means in the console in Chrome you can type:
+  // isis.init(), isis.debug(), isis.Agent, isis.AgentItem, 
+  // isis.Item, isis.City, and isis.Game
+  //
+  // (Parentheses are after init and debug because they're functions)
   return {
     init: function() {
       $_cities    = $('#cities');
@@ -503,12 +538,16 @@ var isis = function() {
     debug: function() {
       return _game;
     },
-    Agent: Agent,
+
+    Agent:     Agent,
     AgentItem: AgentItem,
-    Item: Item,
-    City: City,
-    Game: Game
+    Item:      Item,
+    City:      City,
+    Game:      Game
   }
 }();
+// If you're curious about the parentheses in the previous line read this:
+// http://markdalgleish.com/2011/03/self-executing-anonymous-functions/
 
+// Call the init function and unleash the hounds!
 isis.init();
