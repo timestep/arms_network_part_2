@@ -1,5 +1,6 @@
 // ISIS is a name from the Dope Wars game
 var isis = function() {
+  
   // Define a bunch of variables without any values
   var _game, _items, _cities;
   var $_cities, $_cityTitle, $_items, $_inventory, $_codename, $_agentName, $_agentRank;
